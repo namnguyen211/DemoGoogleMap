@@ -1,18 +1,17 @@
 
 package com.example.namnguyen.demogooglemap.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class Location {
+public class Location implements Parcelable {
 
-    @SerializedName("address")
-    @Expose
-    private String address;
     @SerializedName("lat")
     @Expose
     private Double lat;
@@ -25,12 +24,6 @@ public class Location {
     @SerializedName("cc")
     @Expose
     private String cc;
-    @SerializedName("city")
-    @Expose
-    private String city;
-    @SerializedName("state")
-    @Expose
-    private String state;
     @SerializedName("country")
     @Expose
     private String country;
@@ -38,23 +31,25 @@ public class Location {
     @Expose
     private List<String> formattedAddress = new ArrayList<String>();
 
-    /**
-     * 
-     * @return
-     *     The address
-     */
-    public String getAddress() {
-        return address;
+    protected Location(Parcel in) {
+        cc = in.readString();
+        country = in.readString();
+        formattedAddress = in.createStringArrayList();
+        lng = in.readDouble();
+        lat = in.readDouble();
     }
 
-    /**
-     * 
-     * @param address
-     *     The address
-     */
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    public static final Creator<Location> CREATOR = new Creator<Location>() {
+        @Override
+        public Location createFromParcel(Parcel in) {
+            return new Location(in);
+        }
+
+        @Override
+        public Location[] newArray(int size) {
+            return new Location[size];
+        }
+    };
 
     /**
      * 
@@ -131,42 +126,6 @@ public class Location {
     /**
      * 
      * @return
-     *     The city
-     */
-    public String getCity() {
-        return city;
-    }
-
-    /**
-     * 
-     * @param city
-     *     The city
-     */
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    /**
-     * 
-     * @return
-     *     The state
-     */
-    public String getState() {
-        return state;
-    }
-
-    /**
-     * 
-     * @param state
-     *     The state
-     */
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    /**
-     * 
-     * @return
      *     The country
      */
     public String getCountry() {
@@ -200,4 +159,17 @@ public class Location {
         this.formattedAddress = formattedAddress;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(cc);
+        parcel.writeString(country);
+        parcel.writeStringList(formattedAddress);
+        parcel.writeDouble(lng);
+        parcel.writeDouble(lat);
+    }
 }

@@ -6,17 +6,18 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.namnguyen.demogooglemap.apis.FourSquareApi;
 import com.example.namnguyen.demogooglemap.adapters.FourSquareResultRecyclerViewAdapter;
+import com.example.namnguyen.demogooglemap.models.FoursquareResponse;
 import com.example.namnguyen.demogooglemap.services.FourSquareServiceGenerator;
 import com.example.namnguyen.demogooglemap.events.KeyWordSubmitEvent;
 import com.example.namnguyen.demogooglemap.OnListFragmentInteractionListener;
 import com.example.namnguyen.demogooglemap.R;
-import com.example.namnguyen.demogooglemap.models.FourSquareResponse;
 import com.example.namnguyen.demogooglemap.models.Venue;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,10 +43,9 @@ public class FourSquareResultFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private FourSquareApi fourSquareApi;
-    private List<Venue> venueList = new ArrayList<>();
+    private FourSquareApi foursquareApi;
+    public List<Venue> venueList = new ArrayList<>();
     private FourSquareResultRecyclerViewAdapter mAdapter;
-    private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,48 +71,47 @@ public class FourSquareResultFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-
-    }
-
-    @Subscribe
-    public  void onEvent(KeyWordSubmitEvent event){
-        fourSquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
-        Call<FourSquareResponse> call = fourSquareApi.searchVenue("20130815","10.796097,106.676170",event.getmQuery());
-        call.enqueue(new Callback<FourSquareResponse>() {
-            @Override
-            public void onResponse(Call<FourSquareResponse> call, Response<FourSquareResponse> response) {
-                    venueList.clear();
-                    venueList.addAll(response.body().getResponse().getVenues());
-                    mAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<FourSquareResponse> call, Throwable t) {
-
-            }
-        });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_foursquareresult_list, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.list);
-        mAdapter = new FourSquareResultRecyclerViewAdapter(venueList,mListener);
-        recyclerView.setAdapter(mAdapter);
+
         // Set the adapter
-//        if (view instanceof RecyclerView) {
-//            Context context = view.getContext();
-//            recyclerView = (RecyclerView) view;
-//            if (mColumnCount <= 1) {
-//                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//            } else {
-//                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-//            }
-//
-//        }
+        if (view instanceof RecyclerView) {
+            Context context = view.getContext();
+            RecyclerView recyclerView = (RecyclerView) view;
+            if (mColumnCount <= 1) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            } else {
+                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            }
+            mAdapter = new FourSquareResultRecyclerViewAdapter(getActivity(),venueList, mListener);
+            recyclerView.setAdapter(mAdapter);
+        }
         return view;
     }
 
+    @Subscribe
+    public void onEvent(KeyWordSubmitEvent event) {
+        foursquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
+        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.7960682,106.6760491",200, event.getmQuery());
+        call.enqueue(new Callback<FoursquareResponse>() {
+            @Override
+            public void onResponse(Call<FoursquareResponse> call, Response<FoursquareResponse> response) {
+                Log.d("Success" , String.valueOf(response.body().getResponse().getVenues().size()));
+                venueList.clear();
+                venueList.addAll(response.body().getResponse().getVenues());
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<FoursquareResponse> call, Throwable t) {
+                Log.d("Failure", t.getMessage());
+            }
+        });
+    }
 
     @Override
     public void onAttach(Context context) {

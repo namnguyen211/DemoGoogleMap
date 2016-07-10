@@ -43,7 +43,7 @@ public class FourSquareServiceGenerator {
                 return chain.proceed(reqBuilder.build());
             }
         });
-        httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS);
+//        httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS);
         Retrofit retrofit = builder.client(httpClientBuilder.build()).build();
         return retrofit.create(serviceClass);
     }

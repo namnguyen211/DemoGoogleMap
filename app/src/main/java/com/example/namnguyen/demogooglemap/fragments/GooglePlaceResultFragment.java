@@ -105,4 +105,10 @@ public class GooglePlaceResultFragment extends Fragment {
         super.onStart();
         EventBus.getDefault().register(this);
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
 }

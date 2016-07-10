@@ -3,6 +3,7 @@ package com.example.namnguyen.demogooglemap.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +27,12 @@ import com.example.namnguyen.demogooglemap.events.KeyWordSubmitEvent;
 import com.example.namnguyen.demogooglemap.R;
 import com.example.namnguyen.demogooglemap.fragments.FourSquareResultFragment;
 import com.example.namnguyen.demogooglemap.fragments.GooglePlaceResultFragment;
+import com.example.namnguyen.demogooglemap.models.Venue;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -46,6 +51,7 @@ public class SearchActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private FourSquareResultFragment foursquareResultFragment;
 
     private  SearchView.OnQueryTextListener mQueryTextListener = new SearchView.OnQueryTextListener() {
         @Override
@@ -85,7 +91,9 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                Intent intent = new Intent(SearchActivity.this,MainActivity.class);
+                Intent intent = new Intent(SearchActivity.this, MainActivity.class);
+                List<Venue> list = foursquareResultFragment.venueList;
+                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) list);
                 startActivity(intent);
             }
         });
@@ -174,7 +182,8 @@ public class SearchActivity extends AppCompatActivity {
                 case 0:
                     return GooglePlaceResultFragment.newInstance(1);
                 case 1:
-                    return FourSquareResultFragment.newInstance(1);
+                    foursquareResultFragment = FourSquareResultFragment.newInstance(1);
+                    return foursquareResultFragment;
             }
             return null;
         }
@@ -206,4 +215,12 @@ public class SearchActivity extends AppCompatActivity {
 //            return mQuery;
 //        }
 //    }
+
+
+    @Override
+    public void onBackPressed() {
+        searchView.clearFocus();
+        super.onBackPressed();
+
+    }
 }

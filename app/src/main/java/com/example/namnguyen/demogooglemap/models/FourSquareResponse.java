@@ -1,11 +1,10 @@
 
 package com.example.namnguyen.demogooglemap.models;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class FourSquareResponse {
+public class FoursquareResponse {
 
     @SerializedName("meta")
     @Expose
