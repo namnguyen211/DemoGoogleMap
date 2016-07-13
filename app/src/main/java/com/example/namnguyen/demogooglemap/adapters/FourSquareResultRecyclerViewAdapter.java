@@ -58,6 +58,7 @@ public class FourSquareResultRecyclerViewAdapter extends RecyclerView.Adapter<Fo
                 intent.putExtra("Title",mValues.get(position).getName());
                 intent.putExtra("Lat",mValues.get(position).getLocation().getLat().toString());
                 intent.putExtra("Lng",mValues.get(position).getLocation().getLng().toString());
+                intent.putExtra("DetailActivity","SearchActivity");
                 context.startActivity(intent);
 //                }
             }

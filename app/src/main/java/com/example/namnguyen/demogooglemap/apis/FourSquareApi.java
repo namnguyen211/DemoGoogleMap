@@ -13,7 +13,7 @@ import retrofit2.http.Query;
 public interface FourSquareApi {
 
     @GET("venues/search")
-    Call<FoursquareResponse> searchVenue(@Query("v") String ver, @Query("ll") String longLat,@Query("radius") int radius, @Query("query") String query);
+    Call<FoursquareResponse> searchVenue(@Query("v") String ver, @Query("ll") String longLat, @Query("query") String query);
 
 
 }

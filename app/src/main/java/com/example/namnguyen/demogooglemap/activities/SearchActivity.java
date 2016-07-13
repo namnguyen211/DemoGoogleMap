@@ -94,7 +94,8 @@ public class SearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(SearchActivity.this, MainActivity.class);
                 List<Venue> list = foursquareResultFragment.venueList;
                 intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) list);
-                startActivity(intent);
+                intent.putExtra("MainActivity","SearchActivity");
+                SearchActivity.this.startActivity(intent);
             }
         });
 
@@ -216,11 +217,4 @@ public class SearchActivity extends AppCompatActivity {
 //        }
 //    }
 
-
-    @Override
-    public void onBackPressed() {
-        searchView.clearFocus();
-        super.onBackPressed();
-
-    }
 }
