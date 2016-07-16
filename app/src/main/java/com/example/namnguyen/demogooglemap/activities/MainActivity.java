@@ -53,12 +53,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Double a,b;
     private double mLatitude;
     private double mLongitude;
-    Marker  marker;
-    FloatingActionButton fab;
+    private Marker  marker;
+    private FloatingActionButton fab;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
-    LatLng detailLocation;
+    private List<Marker> markerList = new ArrayList<>();
+    private LatLng detailLocation;
+    private LatLngBounds.Builder builder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        builder = new LatLngBounds.Builder();
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -135,13 +137,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for (Venue v : list) {
                     Location l = v.getLocation();
                     LatLng latLng = new LatLng(l.getLat(), l.getLng());
-                    MarkerOptions vt = new MarkerOptions();
-                    vt.position(latLng);
-                    vt.title(v.getName());
-                    marker  = map.addMarker(vt);
+//                    MarkerOptions vt = new MarkerOptions();
+//                    vt.position(latLng);
+//                    vt.title(v.getName());
+//                    marker  = map.addMarker(vt);
 
-//            map.addMarker(new MarkerOptions().position(latLng).title(v.getName()));
+                    marker =  map.addMarker(new MarkerOptions().position(latLng).title(v.getName()));
+                    markerList.add(marker);
+                    for(Marker m : markerList){
+                        builder.include(m.getPosition());
+                    }
+                    LatLngBounds bounds = builder.build();
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,50);
+                    map.animateCamera(cu);
                 }
+
+
                 googleMap.setOnMarkerClickListener(this);
             }
         }
@@ -217,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             b.include(origin);
             b.include(target);
             LatLngBounds bounds = b.build();
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200, 200, 5);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200, 0, 5);
 
             map.animateCamera(cu);
 //            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));

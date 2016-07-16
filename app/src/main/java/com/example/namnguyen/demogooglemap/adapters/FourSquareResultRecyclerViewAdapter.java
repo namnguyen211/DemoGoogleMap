@@ -56,6 +56,7 @@ public class FourSquareResultRecyclerViewAdapter extends RecyclerView.Adapter<Fo
 //                    mListener.onListFragmentInteraction(holder.mItem);
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("Title",mValues.get(position).getName());
+                intent.putExtra("Id",mValues.get(position).getId());
                 intent.putExtra("Lat",mValues.get(position).getLocation().getLat().toString());
                 intent.putExtra("Lng",mValues.get(position).getLocation().getLng().toString());
                 intent.putExtra("DetailActivity","SearchActivity");

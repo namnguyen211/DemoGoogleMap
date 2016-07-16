@@ -4,24 +4,45 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.namnguyen.demogooglemap.R;
+import com.example.namnguyen.demogooglemap.apis.FourSquareApi;
+import com.example.namnguyen.demogooglemap.models.photo.Item;
+import com.example.namnguyen.demogooglemap.models.photo.PhotoResponse;
+import com.example.namnguyen.demogooglemap.models.photo.Photos;
+import com.example.namnguyen.demogooglemap.services.FourSquareServiceGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
 
     TextView tv1,tvLat,tvLng;
+    FourSquareApi fourSquareApi;
+    ImageView imageView;
+    List<Item> itemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        getPhotoFourSquare();
+        itemList = new ArrayList<>();
 
         tv1 = (TextView) findViewById(R.id.tv_title);
         tvLat= (TextView) findViewById(R.id.tv_lat);
         tvLng = (TextView) findViewById(R.id.tv_lng);
+        imageView = (ImageView) findViewById(R.id.imv);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         Intent intent = this.getIntent();
@@ -34,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
                 tv1.setText(getIntent().getStringExtra("Title"));
                 tvLat.setText(getIntent().getStringExtra("Lat"));
                 tvLng.setText(getIntent().getStringExtra("Lng"));
+
 
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -65,7 +87,26 @@ public class DetailActivity extends AppCompatActivity {
                 });
             }
         }
+    }
 
+    private  void getPhotoFourSquare(){
+        fourSquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
+        Call<PhotoResponse> call = fourSquareApi.getPhoto(getIntent().getStringExtra("Id"),"20130815");
+        call.enqueue(new Callback<PhotoResponse>() {
+            @Override
+            public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
+                Log.d("Success" , String.valueOf(response.body().getResponse().getPhotos().getCount()));
 
+                itemList =    response.body().getResponse().getPhotos().getItems();
+
+//                String a = photos.getItems().get(0).getUrl();
+//                Glide.with(DetailActivity.this).load(a).into(imageView);
+            }
+
+            @Override
+            public void onFailure(Call<PhotoResponse> call, Throwable t) {
+
+            }
+        });
     }
 }

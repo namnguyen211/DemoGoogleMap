@@ -150,8 +150,8 @@ public class FourSquareResultFragment extends Fragment {
     public void onEvent(KeyWordSubmitEvent event) {
 
         foursquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
-        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", c, event.getmQuery());
-//        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.796097,106.676170", event.getmQuery());
+//        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", c, event.getmQuery());
+        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.796097,106.676170", event.getmQuery());
         call.enqueue(new Callback<FoursquareResponse>() {
             @Override
             public void onResponse(Call<FoursquareResponse> call, Response<FoursquareResponse> response) {

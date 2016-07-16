@@ -1,6 +1,7 @@
 package com.example.namnguyen.demogooglemap.apis;
 
 import com.example.namnguyen.demogooglemap.models.FoursquareResponse;
+import com.example.namnguyen.demogooglemap.models.photo.PhotoResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -15,5 +16,6 @@ public interface FourSquareApi {
     @GET("venues/search")
     Call<FoursquareResponse> searchVenue(@Query("v") String ver, @Query("ll") String longLat, @Query("query") String query);
 
-
+    @GET("venues/{VENUE_ID}/photos")
+    Call<PhotoResponse> getPhoto(@Path("VENUE_ID")String venueID, @Query("v") String ver);
 }
