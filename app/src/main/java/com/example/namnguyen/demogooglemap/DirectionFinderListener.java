@@ -1,11 +1,8 @@
 package com.example.namnguyen.demogooglemap;
 
-import com.example.namnguyen.demogooglemap.models.Route;
+import com.example.namnguyen.demogooglemap.models.foursquare.Route;
 
 import java.util.List;
-
-
-
 /**
  * Created by Nam Nguyen on 12/07/2016.
  */

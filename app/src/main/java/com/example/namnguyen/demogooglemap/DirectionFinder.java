@@ -2,9 +2,9 @@ package com.example.namnguyen.demogooglemap;
 
 import android.os.AsyncTask;
 
-import com.example.namnguyen.demogooglemap.models.Distance;
-import com.example.namnguyen.demogooglemap.models.Duration;
-import com.example.namnguyen.demogooglemap.models.Route;
+import com.example.namnguyen.demogooglemap.models.foursquare.Distance;
+import com.example.namnguyen.demogooglemap.models.foursquare.Duration;
+import com.example.namnguyen.demogooglemap.models.foursquare.Route;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -18,7 +18,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ import java.util.List;
  */
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
-    private static final String GOOGLE_API_KEY = "AIzaSyDRegvWjKaM6bdLe_L9n37-mpntYqYQmX8";
+    public static final String GOOGLE_API_KEY = "AIzaSyDRegvWjKaM6bdLe_L9n37-mpntYqYQmX8";
     private DirectionFinderListener listener;
 //    private String origin;
 //    private String destination;

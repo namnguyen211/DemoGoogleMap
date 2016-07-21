@@ -3,14 +3,12 @@ package com.example.namnguyen.demogooglemap.fragments;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,18 +16,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.namnguyen.demogooglemap.activities.MainActivity;
 import com.example.namnguyen.demogooglemap.apis.FourSquareApi;
 import com.example.namnguyen.demogooglemap.adapters.FourSquareResultRecyclerViewAdapter;
-import com.example.namnguyen.demogooglemap.models.FoursquareResponse;
+import com.example.namnguyen.demogooglemap.models.foursquare.FoursquareResponse;
+import com.example.namnguyen.demogooglemap.models.foursquare.photo.Item;
+import com.example.namnguyen.demogooglemap.models.foursquare.photo.PhotoResponse;
 import com.example.namnguyen.demogooglemap.services.FourSquareServiceGenerator;
 import com.example.namnguyen.demogooglemap.events.KeyWordSubmitEvent;
 import com.example.namnguyen.demogooglemap.OnListFragmentInteractionListener;
 import com.example.namnguyen.demogooglemap.R;
-import com.example.namnguyen.demogooglemap.models.Venue;
-import com.google.android.gms.maps.model.LatLng;
+import com.example.namnguyen.demogooglemap.models.foursquare.Venue;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,7 +57,7 @@ public class FourSquareResultFragment extends Fragment {
     LocationManager locationManager;
     double longitudeGPS, latitudeGPS;
     String c;
-
+    RecyclerView recyclerView;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -132,40 +129,71 @@ public class FourSquareResultFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            mAdapter = new FourSquareResultRecyclerViewAdapter(getActivity(), venueList, mListener);
-            recyclerView.setAdapter(mAdapter);
-        }
+                mAdapter = new FourSquareResultRecyclerViewAdapter(getActivity(), venueList, mListener);
+                recyclerView.setAdapter(mAdapter);
 
+        }
         return view;
     }
-
 
     @Subscribe
     public void onEvent(KeyWordSubmitEvent event) {
 
         foursquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
 //        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", c, event.getmQuery());
-        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.796097,106.676170", event.getmQuery());
+        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.796097,106.676170", event.getmQuery(),5);
         call.enqueue(new Callback<FoursquareResponse>() {
             @Override
             public void onResponse(Call<FoursquareResponse> call, Response<FoursquareResponse> response) {
                 Log.d("Success" , String.valueOf(response.body().getResponse().getVenues().size()));
                 venueList.clear();
                 venueList.addAll(response.body().getResponse().getVenues());
-                mAdapter.notifyDataSetChanged();
+                getPhoto();
             }
-
             @Override
             public void onFailure(Call<FoursquareResponse> call, Throwable t) {
                 Log.d("Failure", t.getMessage());
             }
         });
+    }
+
+    public void getPhoto(){
+
+        for (int i = 0;i<venueList.size();i++){
+            getPhotoFourSquare(venueList.get(i).getId(),i);
+        }
+
+    }
+
+    public void getPhotoFourSquare(String i, final int position){
+
+        foursquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
+            Call<PhotoResponse> call = foursquareApi.getPhoto(i,"20130815",3);
+            call.enqueue(new Callback<PhotoResponse>() {
+                @Override
+                public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
+
+//                    itemList =    response.body().getResponse().getPhotos().getItems();
+                    if(response.body() != null){
+                        if(response.body().getResponse() != null){
+                            if(response.body().getResponse().getPhotos() != null){
+                                venueList.get(position).setPhotos(response.body().getResponse().getPhotos());
+                            }
+                        }
+                    }
+                    mAdapter.notifyDataSetChanged();
+                }
+                @Override
+                public void onFailure(Call<PhotoResponse> call, Throwable t) {
+
+                }
+            });
     }
 
     @Override
@@ -175,7 +203,6 @@ public class FourSquareResultFragment extends Fragment {
             mListener = (OnListFragmentInteractionListener) context;
         }
     }
-
     @Override
     public void onDetach() {
         super.onDetach();

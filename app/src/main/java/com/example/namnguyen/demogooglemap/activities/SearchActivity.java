@@ -27,7 +27,7 @@ import com.example.namnguyen.demogooglemap.events.KeyWordSubmitEvent;
 import com.example.namnguyen.demogooglemap.R;
 import com.example.namnguyen.demogooglemap.fragments.FourSquareResultFragment;
 import com.example.namnguyen.demogooglemap.fragments.GooglePlaceResultFragment;
-import com.example.namnguyen.demogooglemap.models.Venue;
+import com.example.namnguyen.demogooglemap.models.foursquare.Venue;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -52,6 +52,7 @@ public class SearchActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private FourSquareResultFragment foursquareResultFragment;
+    private GooglePlaceResultFragment googlePlaceResultFragment;
 
     private  SearchView.OnQueryTextListener mQueryTextListener = new SearchView.OnQueryTextListener() {
         @Override
@@ -181,7 +182,8 @@ public class SearchActivity extends AppCompatActivity {
 
             switch (position) {
                 case 0:
-                    return GooglePlaceResultFragment.newInstance(1);
+                    googlePlaceResultFragment = GooglePlaceResultFragment.newInstance(1);
+                    return googlePlaceResultFragment;
                 case 1:
                     foursquareResultFragment = FourSquareResultFragment.newInstance(1);
                     return foursquareResultFragment;

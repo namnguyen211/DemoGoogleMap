@@ -10,14 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.namnguyen.demogooglemap.DirectionFinder;
 import com.example.namnguyen.demogooglemap.adapters.GooglePlaceResultFragmentRecyclerViewAdapter;
+import com.example.namnguyen.demogooglemap.apis.GoogleApi;
 import com.example.namnguyen.demogooglemap.events.KeyWordSubmitEvent;
 import com.example.namnguyen.demogooglemap.OnListFragmentInteractionListener;
 import com.example.namnguyen.demogooglemap.R;
 import com.example.namnguyen.demogooglemap.dummy.DummyContent;
+import com.example.namnguyen.demogooglemap.models.google.GoogleResponse;
+import com.example.namnguyen.demogooglemap.models.google.Result;
+import com.example.namnguyen.demogooglemap.services.GooglePlaceServiceGenerator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -32,6 +44,9 @@ public class GooglePlaceResultFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    GoogleApi googleApi;
+    GooglePlaceResultFragmentRecyclerViewAdapter viewAdapter;
+    List<Result> resultList = new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,12 +75,6 @@ public class GooglePlaceResultFragment extends Fragment {
 
     }
 
-    @Subscribe
-    public void onEvent(KeyWordSubmitEvent event){
-
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,11 +89,32 @@ public class GooglePlaceResultFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new GooglePlaceResultFragmentRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            viewAdapter = new GooglePlaceResultFragmentRecyclerViewAdapter(resultList,mListener);
+            recyclerView.setAdapter(viewAdapter);
         }
         return view;
     }
 
+    @Subscribe
+    public void onEvent(KeyWordSubmitEvent event){
+
+        googleApi = GooglePlaceServiceGenerator.createService(GoogleApi.class);
+        Call<GoogleResponse> call = googleApi.searchPlace("10.796097,106.676170",event.getmQuery(), DirectionFinder.GOOGLE_API_KEY);
+        call.enqueue(new Callback<GoogleResponse>() {
+            @Override
+            public void onResponse(Call<GoogleResponse> call, Response<GoogleResponse> response) {
+                resultList.clear();;
+                resultList.addAll(response.body().getResults());
+                viewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<GoogleResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
 
     @Override
     public void onAttach(Context context) {

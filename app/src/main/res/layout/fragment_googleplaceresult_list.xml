@@ -9,4 +9,4 @@ android:layout_marginLeft="16dp"
 android:layout_marginRight="16dp"
 app:layoutManager="LinearLayoutManager"
 tools:context=".fragments.GooglePlaceResultFragment"
-tools:listitem="@layout/fragment_foursquareresult" />
+tools:listitem="@layout/fragment_googleplaceresult" />

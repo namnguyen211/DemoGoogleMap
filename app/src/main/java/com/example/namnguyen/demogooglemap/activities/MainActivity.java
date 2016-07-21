@@ -12,15 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.namnguyen.demogooglemap.DirectionFinder;
 import com.example.namnguyen.demogooglemap.DirectionFinderListener;
 import com.example.namnguyen.demogooglemap.R;
-import com.example.namnguyen.demogooglemap.models.Location;
-import com.example.namnguyen.demogooglemap.models.Route;
-import com.example.namnguyen.demogooglemap.models.Venue;
+import com.example.namnguyen.demogooglemap.models.foursquare.Location;
+import com.example.namnguyen.demogooglemap.models.foursquare.Route;
+import com.example.namnguyen.demogooglemap.models.foursquare.Venue;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,7 +27,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -137,12 +134,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for (Venue v : list) {
                     Location l = v.getLocation();
                     LatLng latLng = new LatLng(l.getLat(), l.getLng());
+//                    v.getId();
 //                    MarkerOptions vt = new MarkerOptions();
 //                    vt.position(latLng);
 //                    vt.title(v.getName());
+//                    vt.snippet(v.getId());
 //                    marker  = map.addMarker(vt);
 
-                    marker =  map.addMarker(new MarkerOptions().position(latLng).title(v.getName()));
+                    marker =  map.addMarker(new MarkerOptions().position(latLng).title(v.getName()).snippet(v.getId()));
                     markerList.add(marker);
                     for(Marker m : markerList){
                         builder.include(m.getPosition());
@@ -151,8 +150,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,50);
                     map.animateCamera(cu);
                 }
-
-
                 googleMap.setOnMarkerClickListener(this);
             }
         }
@@ -186,8 +183,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Intent intent = new Intent(MainActivity.this,DetailActivity.class);
         intent.putExtra("DetailActivity","MainActivity");
+        intent.putExtra("TitleMain",marker.getTitle());
+        intent.putExtra("IdMain",marker.getSnippet());
         intent.putExtra("LatMain",String.valueOf(marker.getPosition().latitude));
         intent.putExtra("LngMain",String.valueOf(marker.getPosition().longitude));
+
         startActivity(intent);
 
         return true;
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             b.include(origin);
             b.include(target);
             LatLngBounds bounds = b.build();
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200, 0, 5);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200, 100, 5);
 
             map.animateCamera(cu);
 //            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
@@ -255,4 +255,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             polylinePaths.add(map.addPolyline(polylineOptions));
         }
     }
+
+
 }
