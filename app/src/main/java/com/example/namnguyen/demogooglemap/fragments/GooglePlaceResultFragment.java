@@ -1,6 +1,7 @@
 package com.example.namnguyen.demogooglemap.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.example.namnguyen.demogooglemap.DirectionFinder;
 import com.example.namnguyen.demogooglemap.adapters.GooglePlaceResultFragmentRecyclerViewAdapter;
 import com.example.namnguyen.demogooglemap.apis.GoogleApi;
@@ -25,6 +27,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,7 +49,8 @@ public class GooglePlaceResultFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     GoogleApi googleApi;
     GooglePlaceResultFragmentRecyclerViewAdapter viewAdapter;
-    List<Result> resultList = new ArrayList<>();
+    public List<Result> resultList = new ArrayList<>();
+    public static HashMap photo = new HashMap();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -89,7 +93,7 @@ public class GooglePlaceResultFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            viewAdapter = new GooglePlaceResultFragmentRecyclerViewAdapter(resultList,mListener);
+            viewAdapter = new GooglePlaceResultFragmentRecyclerViewAdapter(getActivity(),resultList,mListener);
             recyclerView.setAdapter(viewAdapter);
         }
         return view;
@@ -105,6 +109,33 @@ public class GooglePlaceResultFragment extends Fragment {
             public void onResponse(Call<GoogleResponse> call, Response<GoogleResponse> response) {
                 resultList.clear();;
                 resultList.addAll(response.body().getResults());
+
+                for(Result r:resultList){
+                    if(r.getPhotos()!=null){
+                        if(r.getPhotos().size() != 0){
+                            photo.put(r.getId(),r.getPhotos().get(0).getUrl());
+                        }
+                    }else {
+                        photo.put(r.getId(),null);
+                    }
+
+                }
+
+//                SharedPreferences pre = getActivity().getSharedPreferences("mydata", getActivity().MODE_PRIVATE);
+//                SharedPreferences.Editor editor=pre.edit();
+//                for(int i =0;i<resultList.size();i++){
+//                    editor.putString(resultList.get(i).getId(),resultList.get(i).getPhotos().get(0).getUrl());
+//                    editor.commit();
+//                    if(resultList.get(i).getPhotos()!=null){
+//                        if(resultList.get(i).getPhotos().size() != 0){
+//                            photo.put(resultList.get(i).getId(),resultList.get(i).getPhotos().get(0).getUrl());
+//                        }
+//                    }else {
+//                        photo.put(resultList.get(i).getId(),null);
+//                    }
+//
+//                }
+
                 viewAdapter.notifyDataSetChanged();
             }
 

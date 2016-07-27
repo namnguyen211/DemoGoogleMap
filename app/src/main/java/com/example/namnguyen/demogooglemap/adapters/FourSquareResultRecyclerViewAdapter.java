@@ -56,6 +56,8 @@ public class FourSquareResultRecyclerViewAdapter extends RecyclerView.Adapter<Fo
                     Glide.with(context).load(a).into(((ViewHolder) holder).imageView);
                 }
             }
+        }else {
+            Glide.with(context).load(GooglePlaceResultFragmentRecyclerViewAdapter.PHOTO).into(((ViewHolder) holder).imageView);
         }
 
 
@@ -67,11 +69,11 @@ public class FourSquareResultRecyclerViewAdapter extends RecyclerView.Adapter<Fo
                 // fragment is attached to one) that an item has been selected.
 //                    mListener.onListFragmentInteraction(holder.mItem);
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("Title",mValues.get(position).getName());
-                intent.putExtra("Id",mValues.get(position).getId());
-                intent.putExtra("Lat",mValues.get(position).getLocation().getLat().toString());
-                intent.putExtra("Lng",mValues.get(position).getLocation().getLng().toString());
-                intent.putExtra("DetailActivity","SearchActivity");
+                intent.putExtra("TitleFS",mValues.get(position).getName());
+                intent.putExtra("IdFS",mValues.get(position).getId());
+                intent.putExtra("LatFS",mValues.get(position).getLocation().getLat().toString());
+                intent.putExtra("LngFS",mValues.get(position).getLocation().getLng().toString());
+                intent.putExtra("DetailActivity","SearchFourSquare");
                 context.startActivity(intent);
 //                }
             }
@@ -87,7 +89,7 @@ public class FourSquareResultRecyclerViewAdapter extends RecyclerView.Adapter<Fo
         public final CardView mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        ImageView imageView;
+        public ImageView imageView;
         public Venue mItem;
 
         public ViewHolder(View view) {

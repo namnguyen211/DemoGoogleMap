@@ -11,6 +11,8 @@ import retrofit2.http.Query;
  */
 public interface GoogleApi {
 
-        @GET("nearbysearch/json")
+    @GET("nearbysearch/json")
     Call<GoogleResponse> searchPlace (@Query("location")String location,@Query("name")String name,@Query("key")String googleServerKey);
+
+
 }

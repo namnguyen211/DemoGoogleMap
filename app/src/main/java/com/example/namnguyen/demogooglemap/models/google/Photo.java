@@ -1,12 +1,19 @@
 
 package com.example.namnguyen.demogooglemap.models.google;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.namnguyen.demogooglemap.DirectionFinder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Photo {
+public class Photo  {
+
+    public static final  String PHOTO_URL = "https://maps.googleapis.com/maps/api/place/photo?";
 
     @SerializedName("height")
     @Expose
@@ -20,6 +27,7 @@ public class Photo {
     @SerializedName("width")
     @Expose
     private Integer width;
+
 
     /**
      * 
@@ -93,4 +101,7 @@ public class Photo {
         this.width = width;
     }
 
+    public String getUrl(){
+        return PHOTO_URL +"maxwidth="+getWidth()+"&photoreference="+getPhotoReference()+"&key="+ DirectionFinder.GOOGLE_API_KEY;
+    }
 }

@@ -147,7 +147,7 @@ public class FourSquareResultFragment extends Fragment {
 
         foursquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
 //        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", c, event.getmQuery());
-        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.796097,106.676170", event.getmQuery(),5);
+        Call<FoursquareResponse> call = foursquareApi.searchVenue("20130815", "10.796097,106.676170", event.getmQuery());
         call.enqueue(new Callback<FoursquareResponse>() {
             @Override
             public void onResponse(Call<FoursquareResponse> call, Response<FoursquareResponse> response) {
@@ -174,7 +174,7 @@ public class FourSquareResultFragment extends Fragment {
     public void getPhotoFourSquare(String i, final int position){
 
         foursquareApi = FourSquareServiceGenerator.createService(FourSquareApi.class);
-            Call<PhotoResponse> call = foursquareApi.getPhoto(i,"20130815",3);
+            Call<PhotoResponse> call = foursquareApi.getPhoto(i,"20130815");
             call.enqueue(new Callback<PhotoResponse>() {
                 @Override
                 public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {

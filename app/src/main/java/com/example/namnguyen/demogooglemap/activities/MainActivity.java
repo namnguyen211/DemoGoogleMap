@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.namnguyen.demogooglemap.DirectionFinder;
 import com.example.namnguyen.demogooglemap.DirectionFinderListener;
@@ -19,6 +20,8 @@ import com.example.namnguyen.demogooglemap.R;
 import com.example.namnguyen.demogooglemap.models.foursquare.Location;
 import com.example.namnguyen.demogooglemap.models.foursquare.Route;
 import com.example.namnguyen.demogooglemap.models.foursquare.Venue;
+import com.example.namnguyen.demogooglemap.models.google.Geometry;
+import com.example.namnguyen.demogooglemap.models.google.Result;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -44,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = "MapsActivity";
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private GoogleMap map;
-    private List<Venue> list = new ArrayList<>();
+    private List<Venue> listFourSquare = new ArrayList<>();
+    private List<Result> listGoogle = new ArrayList<>();
     private GoogleApiClient mGoogleApiClient;
     private android.location.Location mLastLocation;
     Double a,b;
@@ -61,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        list = getIntent().getParcelableArrayListExtra("list");
+        listFourSquare = getIntent().getParcelableArrayListExtra("listFourSquare");
+        listGoogle = getIntent().getParcelableArrayListExtra("listGoogle");
         setContentView(R.layout.activity_main);
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -113,10 +118,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(intent != null){
 //            String strdata = intent.getExtras().getString("MainActivity");
             String strdata = intent.getStringExtra("MainActivity");
+
             if(strdata.equals("DetailActivity")){
                 a = Double.valueOf(getIntent().getStringExtra("LatDetail"));
                 b = Double.valueOf(getIntent().getStringExtra("LngDetail"));
-                 detailLocation = new LatLng(a,b);
+                detailLocation = new LatLng(a,b);
                 map.addMarker( new MarkerOptions().position(detailLocation).title(getIntent().getStringExtra("TitleDetail")));
                 CameraUpdate movezoomCamera = CameraUpdateFactory.newLatLngZoom(detailLocation,18);
                 map.animateCamera(movezoomCamera,3000,null);
@@ -129,9 +135,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
-            }if(strdata.equals("SearchActivity")){
+            }if(strdata.equals("FourSquareSearchActivity")){
                 fab.setVisibility(View.GONE);
-                for (Venue v : list) {
+                for (Venue v : listFourSquare) {
                     Location l = v.getLocation();
                     LatLng latLng = new LatLng(l.getLat(), l.getLng());
 //                    v.getId();
@@ -150,8 +156,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,50);
                     map.animateCamera(cu);
                 }
-                googleMap.setOnMarkerClickListener(this);
+
+            }if(strdata.equals("GoogleSearchActivity")){
+                fab.setVisibility(View.GONE);
+                for (Result r : listGoogle) {
+                    Geometry g = r.getGeometry();
+                    com.example.namnguyen.demogooglemap.models.google.Location l = g.getLocation();
+                    LatLng latLng = new LatLng(l.getLat(), l.getLng());
+                    marker =  map.addMarker(new MarkerOptions().position(latLng).title(r.getName()).snippet(r.getId()));
+                    markerList.add(marker);
+                    for(Marker m : markerList){
+                        builder.include(m.getPosition());
+                    }
+                    LatLngBounds bounds = builder.build();
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,50);
+                    map.animateCamera(cu);
+                }
             }
+            googleMap.setOnMarkerClickListener(this);
         }
     }
 
@@ -185,11 +207,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra("DetailActivity","MainActivity");
         intent.putExtra("TitleMain",marker.getTitle());
         intent.putExtra("IdMain",marker.getSnippet());
+//        intent.putExtra("PhotoMain",marker.getSnippet());
         intent.putExtra("LatMain",String.valueOf(marker.getPosition().latitude));
         intent.putExtra("LngMain",String.valueOf(marker.getPosition().longitude));
-
         startActivity(intent);
-
         return true;
     }
 

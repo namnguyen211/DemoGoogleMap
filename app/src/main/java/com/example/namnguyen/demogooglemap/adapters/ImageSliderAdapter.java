@@ -19,17 +19,19 @@ public class ImageSliderAdapter extends PagerAdapter {
 
     Context context;
     List<String> imageList;
+//    String photo;
 
     public ImageSliderAdapter(Context context, List<String> imageList) {
         this.context = context;
         this.imageList = imageList;
+//        this.photo = photo;
     }
-
 
     @Override
     public int getCount() {
         return imageList.size();
     }
+
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
@@ -41,6 +43,7 @@ public class ImageSliderAdapter extends PagerAdapter {
         View view = LayoutInflater.from(container.getContext()).inflate(R.layout.view_pager_image, container, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
         Glide.with(context).load(imageList.get(position)).into(imageView);
+//        Glide.with(context).load(photo).into(imageView);
         container.addView(view);
         return view;
     }

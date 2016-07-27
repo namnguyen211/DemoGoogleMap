@@ -22,12 +22,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.namnguyen.demogooglemap.events.KeyWordSubmitEvent;
 import com.example.namnguyen.demogooglemap.R;
 import com.example.namnguyen.demogooglemap.fragments.FourSquareResultFragment;
 import com.example.namnguyen.demogooglemap.fragments.GooglePlaceResultFragment;
 import com.example.namnguyen.demogooglemap.models.foursquare.Venue;
+import com.example.namnguyen.demogooglemap.models.google.Result;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -53,6 +55,7 @@ public class SearchActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private FourSquareResultFragment foursquareResultFragment;
     private GooglePlaceResultFragment googlePlaceResultFragment;
+    FloatingActionButton fab;
 
     private  SearchView.OnQueryTextListener mQueryTextListener = new SearchView.OnQueryTextListener() {
         @Override
@@ -86,22 +89,27 @@ public class SearchActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                Intent intent = new Intent(SearchActivity.this, MainActivity.class);
-                List<Venue> list = foursquareResultFragment.venueList;
-                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) list);
-                intent.putExtra("MainActivity","SearchActivity");
-                SearchActivity.this.startActivity(intent);
+                if(mViewPager.getCurrentItem() == 0){
+                    Intent intent = new Intent(SearchActivity.this, MainActivity.class);
+                    List<Result> list = googlePlaceResultFragment.resultList;
+                    intent.putParcelableArrayListExtra("listGoogle", (ArrayList<? extends Parcelable>) list);
+                    intent.putExtra("MainActivity","GoogleSearchActivity");
+                    SearchActivity.this.startActivity(intent);
+
+                }else {
+                    Intent intent = new Intent(SearchActivity.this, MainActivity.class);
+                    List<Venue> list = foursquareResultFragment.venueList;
+                    intent.putParcelableArrayListExtra("listFourSquare", (ArrayList<? extends Parcelable>) list);
+                    intent.putExtra("MainActivity","FourSquareSearchActivity");
+                    SearchActivity.this.startActivity(intent);
+                }
             }
         });
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

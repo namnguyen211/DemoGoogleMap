@@ -14,8 +14,8 @@ import retrofit2.http.Query;
 public interface FourSquareApi {
 
     @GET("venues/search")
-    Call<FoursquareResponse> searchVenue(@Query("v") String ver, @Query("ll") String longLat, @Query("query") String query,@Query("limit") int limit);
+    Call<FoursquareResponse> searchVenue(@Query("v") String ver, @Query("ll") String longLat, @Query("query") String query);
 
     @GET("venues/{VENUE_ID}/photos")
-    Call<PhotoResponse> getPhoto(@Path("VENUE_ID")String venueID, @Query("v") String ver,@Query("limit") int limit);
+    Call<PhotoResponse> getPhoto(@Path("VENUE_ID")String venueID, @Query("v") String ver);
 }

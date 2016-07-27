@@ -1,12 +1,15 @@
 
 package com.example.namnguyen.demogooglemap.models.google;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Result {
+public class Result implements Parcelable {
 
     @SerializedName("geometry")
     @Expose
@@ -44,6 +47,36 @@ public class Result {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
+
+    protected Result(Parcel in){
+        id = in.readString();
+        name =in.readString();
+        geometry = in.readParcelable(Geometry.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Result> CREATOR = new Parcelable.Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel in) {
+            return new Result(in);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeParcelable(geometry, i);
+    }
 
     /**
      * 
